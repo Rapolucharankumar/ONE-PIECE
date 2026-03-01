@@ -26,6 +26,9 @@ export default async function Home() {
   const latestEpisodes = (episodes as JikanEpisode[])?.slice(0, 4) || [];
   const nextReleaseISO = getNextSunday();
 
+  const currentEpisodes = anime?.episodes ? Math.max(anime.episodes, 1155) : 1155;
+  const nextEpisodeNum = currentEpisodes + 1;
+
   return (
     <div className="pb-24">
       <Hero />
@@ -41,7 +44,7 @@ export default async function Home() {
           <div className="bg-bg-secondary/60 backdrop-blur-md rounded-3xl p-8 border border-gray-800 grid grid-cols-2 md:grid-cols-4 gap-6 text-center max-w-5xl mx-auto">
             <div>
               <p className="text-gray-400 text-sm font-bold uppercase tracking-wider mb-2">Total Episodes</p>
-              <p className="text-3xl font-black text-white">{anime.episodes || "Ongoing"}</p>
+              <p className="text-3xl font-black text-white">{currentEpisodes}</p>
             </div>
             <div>
               <p className="text-gray-400 text-sm font-bold uppercase tracking-wider mb-2">Status</p>
@@ -63,7 +66,7 @@ export default async function Home() {
         <Countdown
           targetDate={nextReleaseISO}
           type="Episode"
-          number={(anime?.episodes || 1100) + 1} // Fallback approximation if current episode count isn't immediately resolved
+          number={nextEpisodeNum}
         />
       </section>
 

@@ -1,5 +1,12 @@
 export function getNextSunday() {
+    const returnDate = new Date("2026-04-05T00:30:00.000Z"); // Estimated return date for Elbaph Arc start
     const now = new Date();
+
+    // If we are currently in the hiatus period (before April 2026)
+    if (now.getTime() < returnDate.getTime()) {
+        return returnDate.toISOString();
+    }
+
     const day = now.getDay();
     // If it's Sunday (0), check if it's before or after 9AM. 
     // If before, next airing is today. If after, it's next week.
