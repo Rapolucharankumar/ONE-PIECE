@@ -1,7 +1,8 @@
-import { getCharacters } from "@/lib/queries";
+import { getCharacters } from "@/lib/api";
 import CharacterCard from "@/components/CharacterCard";
 import SearchBar from "@/components/SearchBar";
 import { Suspense } from "react";
+import { JikanCharacter } from "@/types/character";
 
 interface Props {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -10,17 +11,15 @@ interface Props {
 export default async function CharactersPage({ searchParams }: Props) {
     const resolvedParams = await searchParams;
     const q = typeof resolvedParams.q === "string" ? resolvedParams.q.toLowerCase() : "";
-    const crew = typeof resolvedParams.crew === "string" ? resolvedParams.crew : "";
 
-    const allCharacters = await getCharacters() || [];
+    const allCharactersResponse = await getCharacters() || [];
 
-    const filtered = allCharacters.filter(char => {
-        const matchQ = q ? char.name.toLowerCase().includes(q) : true;
-        const matchCrew = crew ? char.crew === crew : true;
-        return matchQ && matchCrew;
-    });
+    // Sort array by highest favorites globally
+    let characters = (allCharactersResponse as JikanCharacter[]).sort((a, b) => b.favorites - a.favorites);
 
-    const crews = Array.from(new Set(allCharacters.map(c => c.crew).filter(Boolean)));
+    if (q) {
+        characters = characters.filter(char => char.character.name.toLowerCase().includes(q));
+    }
 
     return (
         <div className="py-16">
@@ -32,27 +31,20 @@ export default async function CharactersPage({ searchParams }: Props) {
                 <SearchBar placeholder="Search characters by name..." />
             </Suspense>
 
-            {/* Basic Crew Filter - Ideally this would be a client component for interactive filtering, but simple enough for MVP */}
-            <div className="flex flex-wrap gap-3 mt-8 mb-16 justify-center max-w-3xl mx-auto">
-                <a href="/characters" className={`px-4 py-2 rounded-full text-sm font-bold border transition-colors ${!crew ? 'bg-accent-gold text-bg-primary border-accent-gold' : 'bg-transparent text-gray-400 border-gray-800 hover:border-accent-gold'}`}>
-                    All Crews
-                </a>
-                {crews.map(c => (
-                    <a key={String(c)} href={`/characters?crew=${encodeURIComponent(String(c))}${q ? `&q=${q}` : ''}`} className={`px-4 py-2 rounded-full text-sm font-bold border transition-colors ${crew === c ? 'bg-accent-gold text-bg-primary border-accent-gold' : 'bg-transparent text-gray-400 border-gray-800 hover:border-accent-gold'}`}>
-                        {String(c)}
-                    </a>
-                ))}
+            <div className="flex justify-between items-center mb-10 mt-6">
+                <p className="text-gray-400 font-medium">Tracking top {characters.length} global favorites.</p>
             </div>
 
-            {filtered.length > 0 ? (
+            {characters.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    {filtered.map((char, idx) => (
-                        <CharacterCard key={char.id} character={char as any} index={idx} />
+                    {characters.map((char, idx) => (
+                        <CharacterCard key={char.character.mal_id} character={char} index={idx} />
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-20">
-                    <p className="text-2xl text-gray-500 font-medium">No characters found matching your criteria.</p>
+                <div className="text-center py-20 bg-bg-secondary rounded-3xl border border-gray-800">
+                    <p className="text-2xl text-gray-400 font-bold mb-2">No characters found</p>
+                    <p className="text-gray-500">Try adjusting your search criteria.</p>
                 </div>
             )}
         </div>

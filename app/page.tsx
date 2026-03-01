@@ -1,22 +1,30 @@
 import Hero from "@/components/Hero";
 import SearchBar from "@/components/SearchBar";
-import { Suspense } from "react";
 import CharacterCard from "@/components/CharacterCard";
 import EpisodeCard from "@/components/EpisodeCard";
 import Countdown from "@/components/Countdown";
-import { getCharacters, getEpisodes, getReleaseInfo } from "@/lib/queries";
+import { getAnimeInfo, getCharacters, getEpisodes } from "@/lib/api";
+import { getNextSunday } from "@/lib/countdown";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { Suspense } from "react";
+import { JikanCharacter } from "@/types/character";
+import { JikanEpisode } from "@/types/episode";
 
 export default async function Home() {
-  const [characters, episodes, releaseInfo] = await Promise.all([
+  const [anime, characters, episodes] = await Promise.all([
+    getAnimeInfo(),
     getCharacters(),
-    getEpisodes(),
-    getReleaseInfo(),
+    getEpisodes(1),
   ]);
 
-  const featuredCharacters = characters?.slice(0, 4) || [];
-  const latestEpisodes = episodes?.slice(0, 4) || [];
+  // Jikan sometimes returns varied lengths or un-sorted character arrays. Get the top 4 favorites dynamically.
+  const featuredCharacters = (characters as JikanCharacter[])
+    ?.sort((a, b) => b.favorites - a.favorites)
+    .slice(0, 4) || [];
+
+  const latestEpisodes = (episodes as JikanEpisode[])?.slice(0, 4) || [];
+  const nextReleaseISO = getNextSunday();
 
   return (
     <div className="pb-24">
@@ -28,15 +36,36 @@ export default async function Home() {
         </Suspense>
       </div>
 
-      {releaseInfo?.next_episode_date && (
+      {anime && (
         <section className="mt-20">
-          <Countdown
-            targetDate={releaseInfo.next_episode_date}
-            type="Episode"
-            number={releaseInfo.next_episode || 0}
-          />
+          <div className="bg-bg-secondary/60 backdrop-blur-md rounded-3xl p-8 border border-gray-800 grid grid-cols-2 md:grid-cols-4 gap-6 text-center max-w-5xl mx-auto">
+            <div>
+              <p className="text-gray-400 text-sm font-bold uppercase tracking-wider mb-2">Total Episodes</p>
+              <p className="text-3xl font-black text-white">{anime.episodes || "Ongoing"}</p>
+            </div>
+            <div>
+              <p className="text-gray-400 text-sm font-bold uppercase tracking-wider mb-2">Status</p>
+              <p className="text-3xl font-black text-accent-gold">{anime.status}</p>
+            </div>
+            <div>
+              <p className="text-gray-400 text-sm font-bold uppercase tracking-wider mb-2">Score</p>
+              <p className="text-3xl font-black text-white">{anime.score} / 10</p>
+            </div>
+            <div>
+              <p className="text-gray-400 text-sm font-bold uppercase tracking-wider mb-2">Rank</p>
+              <p className="text-3xl font-black text-white">#{anime.rank}</p>
+            </div>
+          </div>
         </section>
       )}
+
+      <section className="mt-20">
+        <Countdown
+          targetDate={nextReleaseISO}
+          type="Episode"
+          number={(anime?.episodes || 1100) + 1} // Fallback approximation if current episode count isn't immediately resolved
+        />
+      </section>
 
       <section className="mt-24">
         <div className="flex justify-between items-end mb-8">
@@ -47,7 +76,7 @@ export default async function Home() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {featuredCharacters.map((char, idx) => (
-            <CharacterCard key={char.id} character={char as any} index={idx} />
+            <CharacterCard key={char.character.mal_id} character={char} index={idx} />
           ))}
         </div>
       </section>
@@ -61,7 +90,7 @@ export default async function Home() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {latestEpisodes.map((ep, idx) => (
-            <EpisodeCard key={ep.number} episode={ep as any} index={idx} />
+            <EpisodeCard key={ep.mal_id} episode={ep} index={idx} featured={idx === 0} />
           ))}
         </div>
       </section>

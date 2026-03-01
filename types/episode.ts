@@ -1,9 +1,12 @@
-export interface Episode {
-    number: number;
-    title?: string | null;
-    arc?: string | null;
-    release_date?: string | null;
-    is_filler?: boolean;
-    manga_adaptation?: number | null;
-    summary?: string | null;
+export interface JikanEpisode {
+    mal_id: number;
+    url: string;
+    title: string;
+    title_japanese: string;
+    title_romanji: string;
+    duration: string;
+    aired: string;
+    filler: boolean;
+    recap: boolean;
+    score: number;
 }

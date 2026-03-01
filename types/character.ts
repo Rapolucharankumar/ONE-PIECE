@@ -1,14 +1,37 @@
-export interface Character {
-    id: string;
+export interface JikanCharacter {
+    character: {
+        mal_id: number;
+        url: string;
+        images: {
+            jpg: {
+                image_url: string;
+            };
+            webp: {
+                image_url: string;
+                small_image_url: string;
+            };
+        };
+        name: string;
+    };
+    role: string;
+    favorites: number;
+}
+
+export interface JikanCharacterDetail {
+    mal_id: number;
+    url: string;
+    images: {
+        jpg: {
+            image_url: string;
+        };
+        webp: {
+            image_url: string;
+            small_image_url: string;
+        };
+    };
     name: string;
-    slug: string;
-    bounty?: number | null;
-    crew?: string | null;
-    devil_fruit?: string | null;
-    haki?: string[] | null;
-    first_episode?: number | null;
-    first_chapter?: number | null;
-    status?: string | null;
-    image_url?: string | null;
-    story?: any | null;
+    name_kanji: string;
+    nicknames: string[];
+    favorites: number;
+    about: string;
 }
