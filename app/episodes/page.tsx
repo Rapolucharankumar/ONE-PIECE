@@ -1,6 +1,7 @@
 import { getEpisodes } from "@/lib/queries";
 import EpisodeCard from "@/components/EpisodeCard";
 import SearchBar from "@/components/SearchBar";
+import { Suspense } from "react";
 
 interface Props {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -27,7 +28,9 @@ export default async function EpisodesPage({ searchParams }: Props) {
                 Episode <span className="text-accent-gold">Archive</span>
             </h1>
 
-            <SearchBar placeholder="Search by title or episode number..." />
+            <Suspense fallback={<div className="h-[76px] w-full max-w-2xl mx-auto rounded-full bg-bg-secondary/50 animate-pulse border border-gray-800" />}>
+                <SearchBar placeholder="Search by title or episode number..." />
+            </Suspense>
 
             <div className="flex flex-wrap gap-3 mt-8 mb-16 justify-center max-w-4xl mx-auto">
                 <a href="/episodes" className={`px-4 py-2 rounded-full text-sm font-bold border transition-colors ${!arc ? 'bg-accent-gold text-bg-primary border-accent-gold' : 'bg-transparent text-gray-400 border-gray-800 hover:border-accent-gold'}`}>

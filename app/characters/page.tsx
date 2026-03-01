@@ -1,6 +1,7 @@
 import { getCharacters } from "@/lib/queries";
 import CharacterCard from "@/components/CharacterCard";
 import SearchBar from "@/components/SearchBar";
+import { Suspense } from "react";
 
 interface Props {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -27,7 +28,9 @@ export default async function CharactersPage({ searchParams }: Props) {
                 Grand Line <span className="text-accent-gold">Database</span>
             </h1>
 
-            <SearchBar placeholder="Search characters by name..." />
+            <Suspense fallback={<div className="h-[76px] w-full max-w-2xl mx-auto rounded-full bg-bg-secondary/50 animate-pulse border border-gray-800" />}>
+                <SearchBar placeholder="Search characters by name..." />
+            </Suspense>
 
             {/* Basic Crew Filter - Ideally this would be a client component for interactive filtering, but simple enough for MVP */}
             <div className="flex flex-wrap gap-3 mt-8 mb-16 justify-center max-w-3xl mx-auto">

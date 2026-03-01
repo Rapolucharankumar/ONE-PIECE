@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import SearchBar from "@/components/SearchBar";
+import { Suspense } from "react";
 import CharacterCard from "@/components/CharacterCard";
 import EpisodeCard from "@/components/EpisodeCard";
 import Countdown from "@/components/Countdown";
@@ -22,7 +23,9 @@ export default async function Home() {
       <Hero />
 
       <div className="mt-16">
-        <SearchBar placeholder="Search characters, episodes, arcs..." />
+        <Suspense fallback={<div className="h-[76px] w-full max-w-2xl mx-auto rounded-full bg-bg-secondary/50 animate-pulse border border-gray-800" />}>
+          <SearchBar placeholder="Search characters, episodes, arcs..." />
+        </Suspense>
       </div>
 
       {releaseInfo?.next_episode_date && (
