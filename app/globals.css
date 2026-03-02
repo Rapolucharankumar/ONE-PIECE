@@ -2,11 +2,12 @@
 
 @theme inline {
   --color-bg-primary: #0f0f1a;
-  --color-bg-secondary: #151522;
-  --color-accent-gold: #facc15;
+  --color-bg-secondary: #1a1a2e;
+  --color-accent-gold: #FFD700;
   --color-foreground: #ffffff;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-cinzel);
 }
 
 :root {
@@ -18,4 +19,20 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), sans-serif;
+}
+
+.glass {
+  background: rgba(26, 26, 46, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glow-hover {
+  transition: all 0.3s ease;
+}
+
+.glow-hover:hover {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
+  transform: translateY(-4px) scale(1.02);
 }
