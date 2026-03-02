@@ -34,7 +34,7 @@ export default async function Home() {
 
         <div className="flex flex-wrap items-center justify-center gap-6 text-lg">
           <div className="glass px-8 py-4 rounded-2xl flex flex-col items-center">
-            <span className="text-3xl font-bold text-[#FFD700]">{anime.episodes || "1100+"}</span>
+            <span className="text-3xl font-bold text-[#FFD700]">{anime.episodes || "1155"}</span>
             <span className="text-sm text-gray-400 uppercase tracking-widest mt-1">Total Episodes</span>
           </div>
           <div className="glass px-8 py-4 rounded-2xl flex flex-col items-center">
@@ -49,7 +49,7 @@ export default async function Home() {
 
         <div className="mt-16 flex flex-col items-center gap-6 relative z-30">
           <h2 className="text-xl font-serif text-white tracking-widest uppercase mb-2 drop-shadow-md">
-            Next Episode Airs In
+            Returns April 2026 (Elbaph Arc)
           </h2>
           <CountdownTimer />
         </div>

@@ -1,32 +1,19 @@
 /**
  * Calculates the next upcoming Sunday at 9:30 AM JST (Japan Standard Time).
  * This is when One Piece traditionally airs in Japan.
+ * Currently hardcoded to April 5th, 2026 (First Sunday in April) due to the Elbaph Arc Hiatus.
  * @returns {Date} The Date object representing the next airing time.
  */
 export function getNextEpisodeDate(): Date {
     const now = new Date();
     // Get current time in JST (UTC+9)
     const jstOffset = 9 * 60 * 60 * 1000;
-    const nowJST = new Date(now.getTime() + now.getTimezoneOffset() * 60000 + jstOffset);
 
-    // Calculate days until next Sunday (0 is Sunday)
-    let daysUntilNextSunday = 0 - nowJST.getDay();
-    if (daysUntilNextSunday <= 0) {
-        // If today is Sunday, but it's past 9:30 AM JST, get next week's Sunday
-        if (daysUntilNextSunday === 0 && (nowJST.getHours() > 9 || (nowJST.getHours() === 9 && nowJST.getMinutes() >= 30))) {
-            daysUntilNextSunday = 7;
-        } else if (daysUntilNextSunday < 0) {
-            daysUntilNextSunday += 7;
-        }
-    }
+    // Target Date: April 5, 2026 09:30:00 JST
+    // Note: Month Index is 0-based, so April is index 3.
+    const targetJST = new Date(Date.UTC(2026, 3, 5, 0, 30, 0)); // 00:30 UTC is 09:30 JST
 
-    const nextSundayJST = new Date(nowJST);
-    nextSundayJST.setDate(nowJST.getDate() + daysUntilNextSunday);
-    nextSundayJST.setHours(9, 30, 0, 0);
-
-    // Convert back from JST to local standard Date object for accurate countdown calculation
-    const localNextSunday = new Date(nextSundayJST.getTime() - jstOffset - now.getTimezoneOffset() * 60000);
-    return localNextSunday;
+    return new Date(targetJST.getTime());
 }
 
 /**
