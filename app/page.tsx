@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { getAnimeInfo } from "@/lib/api";
+import CountdownTimer from "@/components/CountdownTimer";
 
 export async function generateMetadata() {
   return {
@@ -34,7 +34,7 @@ export default async function Home() {
 
         <div className="flex flex-wrap items-center justify-center gap-6 text-lg">
           <div className="glass px-8 py-4 rounded-2xl flex flex-col items-center">
-            <span className="text-3xl font-bold text-[#FFD700]">{anime.episodes}</span>
+            <span className="text-3xl font-bold text-[#FFD700]">{anime.episodes || "1100+"}</span>
             <span className="text-sm text-gray-400 uppercase tracking-widest mt-1">Total Episodes</span>
           </div>
           <div className="glass px-8 py-4 rounded-2xl flex flex-col items-center">
@@ -45,6 +45,13 @@ export default async function Home() {
             <span className="text-3xl font-bold text-white capitalize">{anime.score} / 10</span>
             <span className="text-sm text-gray-400 uppercase tracking-widest mt-1">MAL Score</span>
           </div>
+        </div>
+
+        <div className="mt-16 flex flex-col items-center gap-6 relative z-30">
+          <h2 className="text-xl font-serif text-white tracking-widest uppercase mb-2 drop-shadow-md">
+            Next Episode Airs In
+          </h2>
+          <CountdownTimer />
         </div>
 
         <div className="mt-16 flex gap-6 justify-center">

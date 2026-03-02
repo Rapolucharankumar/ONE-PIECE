@@ -1,51 +1,34 @@
-import Link from "next/link";
-import { getEpisodes } from "@/lib/api";
+import { getAllEpisodes } from "@/lib/api";
+import EpisodeList from "@/components/EpisodeList";
 
 export async function generateMetadata() {
     return {
-        title: "Episodes | One Piece Universe",
-        description: "Browse the legendary episodes of the One Piece anime.",
+        title: "All Episodes | One Piece Universe",
+        description: "Browse the complete collection of all 1100+ One Piece anime episodes.",
     };
 }
 
 export default async function Episodes() {
-    const episodes = await getEpisodes(1);
+    // This calls the loop function which is aggressively cached in Next.js
+    const allEpisodes = await getAllEpisodes();
 
     return (
         <div className="min-h-screen text-white pt-10">
-            <h1 className="text-6xl md:text-7xl font-bold font-serif mb-16 text-center tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500">
-                EPISODES
+            <h1 className="text-6xl md:text-7xl font-bold font-serif mb-6 text-center tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500">
+                ALL EPISODES
             </h1>
+            <p className="text-center text-gray-400 mb-16 max-w-2xl mx-auto text-lg">
+                Explore the complete saga. Scroll through every single episode ever aired without hitting rate limits or empty screens.
+            </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {episodes?.map((ep: any) => (
-                    <Link
-                        href={`/episodes/${ep.mal_id}`}
-                        key={ep.mal_id}
-                        className="group glass p-6 rounded-3xl glow-hover flex flex-col justify-between min-h-[160px]"
-                    >
-                        <div>
-                            <div className="flex items-center gap-3 mb-4">
-                                <span className="px-4 py-1.5 bg-[#FFD700]/10 text-[#FFD700] rounded-full text-xs font-bold border border-[#FFD700]/20 tracking-widest">
-                                    EP {ep.mal_id}
-                                </span>
-                                <span className="text-sm text-gray-400 font-medium">
-                                    {ep.aired ? new Date(ep.aired).toLocaleDateString() : 'TBD'}
-                                </span>
-                            </div>
-                            <h2 className="text-xl md:text-2xl font-bold font-serif group-hover:text-[#FFD700] transition-colors line-clamp-2 pr-4 leading-tight">
-                                {ep.title}
-                            </h2>
-                        </div>
-
-                        {ep.score && (
-                            <div className="mt-6 flex items-center gap-2 text-sm text-gray-400">
-                                <span className="text-[#FFD700]">★</span> {ep.score}
-                            </div>
-                        )}
-                    </Link>
-                ))}
-            </div>
+            {allEpisodes.length > 0 ? (
+                <EpisodeList episodes={allEpisodes} />
+            ) : (
+                <div className="text-center py-20 glass rounded-3xl">
+                    <p className="text-[#FFD700] text-xl font-bold mb-4">Fetching the Grand Line...</p>
+                    <p className="text-gray-400">If this is the very first build, episodes are currently caching on the server to prevent API limits. Please refresh in a moment.</p>
+                </div>
+            )}
         </div>
     );
 }

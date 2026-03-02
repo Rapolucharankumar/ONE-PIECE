@@ -1,4 +1,5 @@
 import { getAnimeInfo } from "@/lib/api";
+import CountdownTimer from "@/components/CountdownTimer";
 
 export async function generateMetadata() {
     return {
@@ -26,9 +27,14 @@ export default async function Release() {
                         {anime.episodes || "1100+"}
                     </div>
 
-                    <div className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-[#FFD700]/10 rounded-full border border-[#FFD700]/30 text-[#FFD700] text-sm md:text-base font-bold tracking-wider">
+                    <div className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-[#FFD700]/10 rounded-full border border-[#FFD700]/30 text-[#FFD700] text-sm md:text-base font-bold tracking-wider mb-12">
                         <div className="w-2 h-2 rounded-full bg-[#FFD700] animate-pulse"></div>
                         {anime.status}
+                    </div>
+
+                    <div className="pt-10 border-t border-white/10 w-full">
+                        <h2 className="text-xl text-gray-400 uppercase tracking-widest font-bold mb-6">Next Episode Countdown</h2>
+                        <CountdownTimer />
                     </div>
                 </div>
             </div>
