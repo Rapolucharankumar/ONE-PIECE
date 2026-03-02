@@ -21,19 +21,35 @@ export default async function Release() {
                         Release Tracker
                     </h1>
 
-                    <p className="text-gray-400 text-lg md:text-xl uppercase tracking-widest font-bold mb-4">Latest Episode Reached</p>
-
-                    <div className="text-7xl md:text-9xl font-bold text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.4)] mb-8">
-                        {anime.episodes || "1155"}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                        <div>
+                            <p className="text-gray-400 text-sm md:text-base uppercase tracking-widest font-bold mb-2">Latest Episode Reached</p>
+                            <div className="text-5xl md:text-7xl font-bold text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.4)]">
+                                {anime.episodes || "1155"}
+                            </div>
+                        </div>
+                        <div>
+                            <p className="text-gray-400 text-sm md:text-base uppercase tracking-widest font-bold mb-2">Next Episode</p>
+                            <div className="text-5xl md:text-7xl font-bold text-[#FFD700] drop-shadow-[0_0_30px_rgba(255,215,0,0.4)]">
+                                1156
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-[#FFD700]/10 rounded-full border border-[#FFD700]/30 text-[#FFD700] text-sm md:text-base font-bold tracking-wider mb-12">
+                    <div className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-[#FFD700]/10 rounded-full border border-[#FFD700]/30 text-[#FFD700] text-sm md:text-base font-bold tracking-wider mb-8">
                         <div className="w-2 h-2 rounded-full bg-[#FFD700] animate-pulse"></div>
                         On Hiatus (Returns April 2026)
                     </div>
 
-                    <div className="pt-10 border-t border-white/10 w-full">
-                        <h2 className="text-xl text-gray-400 uppercase tracking-widest font-bold mb-6">Elbaph Arc Countdown</h2>
+                    <p className="text-gray-400 text-sm italic mb-12 max-w-xl mx-auto">
+                        * Note: One Piece traditionally airs weekly on Sundays at 9:30 AM (Japan Standard Time).
+                        The anime is currently on a production break following the Egghead Arc.
+                    </p>
+
+                    <div className="pt-10 border-t border-white/10 w-full relative">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0f0f1a] px-6 text-[#FFD700] font-bold tracking-widest uppercase text-sm border border-white/10 rounded-full py-1">
+                            Elbaph Arc Countdown
+                        </div>
                         <CountdownTimer />
                     </div>
                 </div>

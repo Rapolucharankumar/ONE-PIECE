@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { getCharacter } from "@/lib/api";
+import { getCharacterFull } from "@/lib/api";
 
 type CharacterDetailProps = {
     params: { id: string };
@@ -7,7 +7,7 @@ type CharacterDetailProps = {
 
 export async function generateMetadata({ params }: CharacterDetailProps) {
     const { id } = await params;
-    const character = await getCharacter(id);
+    const character = await getCharacterFull(id);
     return {
         title: `${character.name} | One Piece Universe`,
         description: character.about?.substring(0, 150) + "...",
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: CharacterDetailProps) {
 
 export default async function CharacterDetail({ params }: CharacterDetailProps) {
     const { id } = await params;
-    const character = await getCharacter(id);
+    const character = await getCharacterFull(id);
 
     return (
         <div className="min-h-screen text-white pt-10 pb-20">
@@ -49,12 +49,31 @@ export default async function CharacterDetail({ params }: CharacterDetailProps) 
                         ))}
                     </div>
 
-                    <div className="glass p-8 rounded-3xl border border-white/5 relative">
+                    <div className="glass p-8 rounded-3xl border border-white/5 relative mb-10">
                         <div className="absolute top-0 left-8 -mt-4 px-4 bg-[#0f0f1a] text-[#FFD700] text-sm uppercase tracking-widest font-bold">Biography</div>
                         <p className="text-gray-300 text-lg leading-relaxed whitespace-pre-wrap font-sans">
                             {character.about || "No biography available for this character."}
                         </p>
                     </div>
+
+                    {character.anime && character.anime.length > 0 && (
+                        <div className="glass p-8 rounded-3xl border border-white/5 relative">
+                            <div className="absolute top-0 left-8 -mt-4 px-4 bg-[#0f0f1a] text-[#FFD700] text-sm uppercase tracking-widest font-bold">Anime Appearances</div>
+                            <div className="flex flex-wrap gap-3">
+                                {character.anime.slice(0, 10).map((appearance: any) => (
+                                    <div key={appearance.anime.mal_id} className="bg-white/5 px-4 py-2 rounded-xl flex items-center gap-2 border border-white/10">
+                                        <span className="text-gray-300 font-medium">{appearance.anime.title}</span>
+                                        <span className="text-xs bg-[#FFD700]/10 text-[#FFD700] px-2 py-0.5 rounded-full uppercase tracking-wider">{appearance.role}</span>
+                                    </div>
+                                ))}
+                                {character.anime.length > 10 && (
+                                    <div className="bg-white/5 px-4 py-2 rounded-xl flex items-center gap-2 border border-white/10 text-gray-400">
+                                        + {character.anime.length - 10} more
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

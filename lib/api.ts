@@ -1,38 +1,45 @@
 const BASE = "https://api.jikan.moe/v4";
 
-// Revalidate times strictly defined as constants for clarity
+// Revalidate times adjusted for final MVP performance
+const CACHE_6_HOURS = 21600;
 const CACHE_12_HOURS = 43200;
-const CACHE_24_HOURS = 86400;
 
 export async function getAnimeInfo() {
     // Official One Piece anime entry is 21
-    const res = await fetch(`${BASE}/anime/21`, { next: { revalidate: CACHE_12_HOURS } });
+    const res = await fetch(`${BASE}/anime/21`, { next: { revalidate: CACHE_6_HOURS } });
     if (!res.ok) return null;
     const json = await res.json();
     return json.data;
 }
 
 export async function getCharacters() {
-    // Fetch characters, caching for 24 hours to avoid heavy payloads
-    const res = await fetch(`${BASE}/anime/21/characters`, { next: { revalidate: CACHE_24_HOURS } });
+    // Fetch characters, caching for 12 hours to avoid heavy payloads
+    const res = await fetch(`${BASE}/anime/21/characters`, { next: { revalidate: CACHE_12_HOURS } });
     if (!res.ok) return [];
     const json = await res.json();
     return json.data || [];
 }
 
-export async function getCharacter(id: string) {
-    const res = await fetch(`${BASE}/characters/${id}`, { next: { revalidate: CACHE_24_HOURS } });
+export async function getCharacterFull(id: string) {
+    const res = await fetch(`${BASE}/characters/${id}/full`, { next: { revalidate: CACHE_12_HOURS } });
     if (!res.ok) return null;
     const json = await res.json();
     return json.data;
 }
 
-export async function getEpisodes(page = 1) {
-    // Single page fetch for backwards compatibility if needed, but not primarily used now
-    const res = await fetch(`${BASE}/anime/21/episodes?page=${page}`, { next: { revalidate: CACHE_12_HOURS } });
+export async function getEpisodes() {
+    // Deprecated for final MVP in favor of getAllEpisodes, keeping for back compat
+    const res = await fetch(`${BASE}/anime/21/episodes?page=1`, { next: { revalidate: CACHE_6_HOURS } });
     if (!res.ok) return [];
     const json = await res.json();
     return json.data || [];
+}
+
+export async function getEpisodeById(id: string) {
+    const res = await fetch(`${BASE}/anime/21/episodes/${id}`, { next: { revalidate: CACHE_12_HOURS } });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data;
 }
 
 /**
@@ -48,7 +55,7 @@ export async function getAllEpisodes() {
     while (hasNextPage) {
         console.log(`Fetching Episodes Page ${page}...`);
         try {
-            const res = await fetch(`${BASE}/anime/21/episodes?page=${page}`, { next: { revalidate: CACHE_24_HOURS } });
+            const res = await fetch(`${BASE}/anime/21/episodes?page=${page}`, { next: { revalidate: CACHE_12_HOURS } });
 
             if (res.status === 429) {
                 console.warn("Jikan Rate Limit Hit! Slowing down considerably to recover...");
@@ -94,13 +101,37 @@ export async function searchGlobal(query: string) {
     const characters = charRes.ok ? await charRes.json() : { data: [] };
     const allEpisodes = epRes.ok ? await epRes.json() : { data: [] };
 
-    // Better search filtering: We only get page 1 episodes from Jikan natively if we use the URL above.
-    // To truly search them, we could filter over getAllEpisodes(), but for performance in a global search
-    // we simply iterate the first 100 recent array data.
-    const filteredEps = (allEpisodes.data || []).filter((ep: any) =>
-        ep.title.toLowerCase().includes(query.toLowerCase()) ||
-        ep.mal_id.toString() === query.trim()
-    );
+    // Convert query to lower case
+    const q = query.toLowerCase();
+
+    // Map keywords to specific episode numbers (rudimentary Arc search)
+    const ARC_KEYWORDS: Record<string, number> = {
+        "east blue": 1,
+        "alabasta": 62,
+        "skypiea": 153,
+        "water 7": 229,
+        "enies lobby": 264,
+        "thriller bark": 337,
+        "sabaody": 385,
+        "marineford": 457,
+        "fishman island": 517,
+        "punk hazard": 579,
+        "dressrosa": 629,
+        "zou": 751,
+        "whole cake": 783,
+        "wano": 890,
+        "egghead": 1086,
+        "elbaph": 1156,
+    };
+
+    let targetArcEpisode = ARC_KEYWORDS[q];
+
+    const filteredEps = (allEpisodes.data || []).filter((ep: any) => {
+        const titleMatch = ep.title.toLowerCase().includes(q);
+        const idMatch = ep.mal_id.toString() === query.trim();
+        const arcMatch = targetArcEpisode && ep.mal_id >= targetArcEpisode && ep.mal_id <= targetArcEpisode + 50;
+        return titleMatch || idMatch || arcMatch;
+    });
 
     return {
         characters: characters.data || [],
