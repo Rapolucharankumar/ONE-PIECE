@@ -138,3 +138,60 @@ export async function searchGlobal(query: string) {
         episodes: filteredEps
     };
 }
+
+export const ARC_DATA = [
+    { name: "East Blue", start: 1, end: 61 },
+    { name: "Alabasta", start: 62, end: 130 },
+    { name: "Skypiea", start: 131, end: 206 },
+    { name: "Water 7", start: 207, end: 325 },
+    { name: "Thriller Bark", start: 326, end: 384 },
+    { name: "Summit War", start: 385, end: 516 },
+    { name: "Fishman Island", start: 517, end: 574 },
+    { name: "Dressrosa", start: 575, end: 746 },
+    { name: "Four Emperors", start: 747, end: 1085 },
+    { name: "Egghead", start: 1086, end: 1155 },
+    { name: "Elbaph", start: 1156, end: Infinity },
+];
+
+export async function getLiveEpisodesAndArc() {
+    try {
+        const query = `
+        query {
+            Media(idMal: 21, type: ANIME) {
+                episodes
+                nextAiringEpisode {
+                    episode
+                }
+            }
+        }`;
+        
+        const res = await fetch('https://graphql.anilist.co', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ query }),
+            // Revalidate every 6 hours so it catches new episodes reliably
+            next: { revalidate: 21600 } 
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch from AniList");
+
+        const json = await res.json();
+        
+        // Anilist nextAiringEpisode can be null if it's on a break and no schedule is known
+        const nextEpisode = json.data?.Media?.nextAiringEpisode?.episode;
+        
+        // If there's a next episode, current is next - 1. Otherwise fallback to a known high number safely.
+        const currentTotal = nextEpisode ? nextEpisode - 1 : 1155; 
+
+        const currentArc = ARC_DATA.find(arc => currentTotal >= arc.start && currentTotal <= arc.end) || ARC_DATA[ARC_DATA.length - 1];
+
+        return {
+            episodes: currentTotal,
+            currentArc: currentArc.name,
+            totalArcs: ARC_DATA.length
+        };
+    } catch (err) {
+        console.error("Error fetching live episode count", err);
+        return { episodes: 1155, currentArc: "Egghead", totalArcs: ARC_DATA.length };
+    }
+}
