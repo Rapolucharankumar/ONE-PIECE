@@ -21,8 +21,14 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen text-white w-full -mt-28 relative flex flex-col items-center justify-center overflow-hidden">
-      {/* Background Hero Map Image Placeholder */}
-      <div className="absolute inset-0 z-0">
+      {/* Background Gear 5 Animation 4K Loop */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-black">
+        <iframe
+            src="https://www.youtube.com/embed/giHsvdYelqw?autoplay=1&mute=1&controls=0&loop=1&playlist=giHsvdYelqw&playsinline=1&rel=0&showinfo=0&disablekb=1&modestbranding=1"
+            className="w-[300vw] h-[300vh] lg:w-[200vw] lg:h-[200vh] -translate-x-1/3 -translate-y-1/3 opacity-30 object-cover absolute top-0 left-0"
+            allow="autoplay; encrypted-media"
+            title="Luffy Gear 5 Loop"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f1a] via-[#0f0f1a]/80 to-transparent z-10" />
       </div>
 
@@ -77,9 +83,12 @@ export default async function Home() {
         <FadeIn y={50} delay={0.6} className="mt-20 flex flex-col items-center gap-6 relative z-30">
           <div className="glass border border-white/10 p-8 rounded-3xl shadow-2xl backdrop-blur-xl bg-gradient-to-b from-white/5 to-transparent">
             <h2 className="text-xl font-serif text-[#FFD700] tracking-widest uppercase mb-4 drop-shadow-md text-center">
-                Returns April 2026 (Elbaph Arc)
+                {liveStats.nextEpisodeTime 
+                    ? `Episode ${liveStats.episodes + 1} Airs In (${liveStats.currentArc} Arc)`
+                    : `Returns April 2026 (Elbaph Arc)`
+                }
             </h2>
-            <CountdownTimer />
+            <CountdownTimer targetTimestamp={liveStats.nextEpisodeTime} />
           </div>
         </FadeIn>
 

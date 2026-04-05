@@ -161,6 +161,7 @@ export async function getLiveEpisodesAndArc() {
                 episodes
                 nextAiringEpisode {
                     episode
+                    airingAt
                 }
             }
         }`;
@@ -178,7 +179,9 @@ export async function getLiveEpisodesAndArc() {
         const json = await res.json();
         
         // Anilist nextAiringEpisode can be null if it's on a break and no schedule is known
-        const nextEpisode = json.data?.Media?.nextAiringEpisode?.episode;
+        const nextAiring = json.data?.Media?.nextAiringEpisode;
+        const nextEpisode = nextAiring?.episode;
+        const nextAiringAt = nextAiring?.airingAt;
         
         // If there's a next episode, current is next - 1. Otherwise fallback to a known high number safely.
         const currentTotal = nextEpisode ? nextEpisode - 1 : 1155; 
@@ -188,10 +191,11 @@ export async function getLiveEpisodesAndArc() {
         return {
             episodes: currentTotal,
             currentArc: currentArc.name,
-            totalArcs: ARC_DATA.length
+            totalArcs: ARC_DATA.length,
+            nextEpisodeTime: nextAiringAt ? nextAiringAt * 1000 : null
         };
     } catch (err) {
         console.error("Error fetching live episode count", err);
-        return { episodes: 1155, currentArc: "Egghead", totalArcs: ARC_DATA.length };
+        return { episodes: 1155, currentArc: "Egghead", totalArcs: ARC_DATA.length, nextEpisodeTime: null };
     }
 }

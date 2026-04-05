@@ -1,19 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getNextEpisodeDate, calculateTimeRemaining } from "@/lib/time";
+import { calculateTimeRemaining } from "@/lib/time";
 
-export default function CountdownTimer() {
+export default function CountdownTimer({ targetTimestamp }: { targetTimestamp?: number | null }) {
     const [targetDate, setTargetDate] = useState<Date | null>(null);
     const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         // Run once on mount to establish the target date on the client
-        const nextDate = getNextEpisodeDate();
+        const nextDate = targetTimestamp ? new Date(targetTimestamp) : new Date("2026-04-05T09:30:00+09:00"); // fallback to Elbaph
         setTargetDate(nextDate);
         setIsMounted(true);
-    }, []);
+    }, [targetTimestamp]);
 
     useEffect(() => {
         if (!targetDate) return;
