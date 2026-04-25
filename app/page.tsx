@@ -21,15 +21,14 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen text-white w-full -mt-28 relative flex flex-col items-center justify-center overflow-hidden">
-      {/* Background Gear 5 Animation 4K Loop */}
+      {/* Background Gear 5 Cinematic 4K Image */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-black">
-        <iframe
-            src="https://www.youtube.com/embed/giHsvdYelqw?autoplay=1&mute=1&controls=0&loop=1&playlist=giHsvdYelqw&playsinline=1&rel=0&showinfo=0&disablekb=1&modestbranding=1"
-            className="w-[300vw] h-[300vh] lg:w-[200vw] lg:h-[200vh] -translate-x-1/3 -translate-y-1/3 opacity-30 object-cover absolute top-0 left-0"
-            allow="autoplay; encrypted-media"
-            title="Luffy Gear 5 Loop"
+        <div
+            className="w-full h-full absolute top-0 left-0 opacity-40 bg-cover bg-center bg-no-repeat animate-kenburns origin-center"
+            style={{ backgroundImage: 'url(/luffy-bg.png)' }}
+            title="Luffy Gear 5 Cinematic"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f1a] via-[#0f0f1a]/80 to-transparent z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f1a] via-[#0f0f1a]/70 to-transparent z-10" />
       </div>
 
       <div className="relative z-20 text-center max-w-5xl mx-auto px-4 mt-32 w-full">
