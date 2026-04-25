@@ -52,6 +52,7 @@ export async function getAllEpisodes() {
     let page = 1;
     let hasNextPage = true;
 
+    // Fetch confirmed episodes from Jikan
     while (hasNextPage) {
         console.log(`Fetching Episodes Page ${page}...`);
         try {
@@ -77,14 +78,37 @@ export async function getAllEpisodes() {
             hasNextPage = json.pagination?.has_next_page || false;
             page++;
 
-            // Wait 1000ms to strictly follow <3 requests per second limit safely.
             if (hasNextPage) {
                 await new Promise((resolve) => setTimeout(resolve, 1000));
             }
 
         } catch (error) {
             console.error("Error fetching all episodes at page", page, error);
-            break; // Stop loop and return current batch on hard error
+            break; 
+        }
+    }
+
+    // NEW: Sync with live episode tracker to handle API lag
+    const liveData = await getLiveEpisodesAndArc();
+    const maxFetchedId = allEpisodes.length > 0 ? Math.max(...allEpisodes.map(e => e.mal_id)) : 1155;
+
+    if (liveData.episodes > maxFetchedId) {
+        console.log(`API Lag Detected: Jikan has ${maxFetchedId} but Tracker shows ${liveData.episodes}. Adding placeholders.`);
+        
+        for (let i = maxFetchedId + 1; i <= liveData.episodes; i++) {
+            // Estimate air date (weekly Sundays)
+            const baseDate = new Date("2026-04-05T09:30:00+09:00"); // Episode 1156
+            const weeksToAdd = i - 1156;
+            const airDate = new Date(baseDate.getTime() + (weeksToAdd * 7 * 24 * 60 * 60 * 1000));
+
+            allEpisodes.push({
+                mal_id: i,
+                title: "New Episode - Title Pending",
+                aired: airDate.toISOString(),
+                score: null,
+                filler: false,
+                recap: false,
+            });
         }
     }
 
