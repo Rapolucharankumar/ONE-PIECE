@@ -1,4 +1,4 @@
-import { getAnimeInfo } from "@/lib/api";
+import { getLiveEpisodesAndArc } from "@/lib/api";
 import CountdownTimer from "@/components/CountdownTimer";
 
 export async function generateMetadata() {
@@ -9,7 +9,8 @@ export async function generateMetadata() {
 }
 
 export default async function Release() {
-    const anime = await getAnimeInfo();
+    const data = await getLiveEpisodesAndArc();
+    const isHiatus = !data.nextEpisodeTime && data.episodes <= 1155;
 
     return (
         <div className="min-h-screen text-white pt-10 flex flex-col items-center justify-center -mt-20">
@@ -25,32 +26,39 @@ export default async function Release() {
                         <div>
                             <p className="text-gray-400 text-sm md:text-base uppercase tracking-widest font-bold mb-2">Latest Episode Reached</p>
                             <div className="text-5xl md:text-7xl font-bold text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.4)]">
-                                {anime.episodes || "1155"}
+                                {data.episodes}
                             </div>
                         </div>
                         <div>
                             <p className="text-gray-400 text-sm md:text-base uppercase tracking-widest font-bold mb-2">Next Episode</p>
                             <div className="text-5xl md:text-7xl font-bold text-[#FFD700] drop-shadow-[0_0_30px_rgba(255,215,0,0.4)]">
-                                1156
+                                {data.episodes + 1}
                             </div>
                         </div>
                     </div>
 
-                    <div className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-[#FFD700]/10 rounded-full border border-[#FFD700]/30 text-[#FFD700] text-sm md:text-base font-bold tracking-wider mb-8">
-                        <div className="w-2 h-2 rounded-full bg-[#FFD700] animate-pulse"></div>
-                        On Hiatus (Returns April 2026)
-                    </div>
+                    {isHiatus ? (
+                        <div className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-[#FFD700]/10 rounded-full border border-[#FFD700]/30 text-[#FFD700] text-sm md:text-base font-bold tracking-wider mb-8">
+                            <div className="w-2 h-2 rounded-full bg-[#FFD700] animate-pulse"></div>
+                            On Hiatus (Returns April 2026)
+                        </div>
+                    ) : (
+                        <div className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-green-500/10 rounded-full border border-green-500/30 text-green-400 text-sm md:text-base font-bold tracking-wider mb-8">
+                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                            Currently Airing: {data.currentArc} Arc
+                        </div>
+                    )}
 
                     <p className="text-gray-400 text-sm italic mb-12 max-w-xl mx-auto">
                         * Note: One Piece traditionally airs weekly on Sundays at 9:30 AM (Japan Standard Time).
-                        The anime is currently on a production break following the Egghead Arc.
+                        {isHiatus ? " The anime is currently on a production break following the Egghead Arc." : " The anime has returned from hiatus and is now covering the Elbaph Arc."}
                     </p>
 
                     <div className="pt-10 border-t border-white/10 w-full relative">
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0f0f1a] px-6 text-[#FFD700] font-bold tracking-widest uppercase text-sm border border-white/10 rounded-full py-1">
-                            Elbaph Arc Countdown
+                            {isHiatus ? "Elbaph Arc Countdown" : "Next Episode Countdown"}
                         </div>
-                        <CountdownTimer />
+                        <CountdownTimer targetTimestamp={data.nextEpisodeTime} />
                     </div>
                 </div>
             </div>

@@ -183,8 +183,20 @@ export async function getLiveEpisodesAndArc() {
         const nextEpisode = nextAiring?.episode;
         const nextAiringAt = nextAiring?.airingAt;
         
-        // If there's a next episode, current is next - 1. Otherwise fallback to a known high number safely.
-        const currentTotal = nextEpisode ? nextEpisode - 1 : 1155; 
+        // If there's a next episode, current is next - 1. 
+        // Otherwise calculate based on time passed since April 5th hiatus end
+        let currentTotal = nextEpisode ? nextEpisode - 1 : 1155; 
+        
+        if (!nextEpisode) {
+            const now = new Date();
+            const hiatusEnd = new Date(Date.UTC(2026, 3, 5, 0, 30, 0));
+            if (now > hiatusEnd) {
+                const weeksPassed = Math.floor((now.getTime() - hiatusEnd.getTime()) / (7 * 24 * 60 * 60 * 1000));
+                currentTotal = 1156 + weeksPassed - 1; // 1156 is the first one back
+                // To be safe, if now is before Sunday 09:30 JST of current week, we don't count it yet
+                // But weeksPassed floor already does this roughly.
+            }
+        }
 
         const currentArc = ARC_DATA.find(arc => currentTotal >= arc.start && currentTotal <= arc.end) || ARC_DATA[ARC_DATA.length - 1];
 
@@ -196,6 +208,14 @@ export async function getLiveEpisodesAndArc() {
         };
     } catch (err) {
         console.error("Error fetching live episode count", err);
-        return { episodes: 1155, currentArc: "Egghead", totalArcs: ARC_DATA.length, nextEpisodeTime: null };
+        // Robust fallback logic
+        const now = new Date();
+        const hiatusEnd = new Date(Date.UTC(2026, 3, 5, 0, 30, 0));
+        let episodes = 1155;
+        if (now > hiatusEnd) {
+            const weeksPassed = Math.floor((now.getTime() - hiatusEnd.getTime()) / (7 * 24 * 60 * 60 * 1000));
+            episodes = 1156 + weeksPassed - 1;
+        }
+        return { episodes, currentArc: episodes >= 1156 ? "Elbaph" : "Egghead", totalArcs: ARC_DATA.length, nextEpisodeTime: null };
     }
 }
