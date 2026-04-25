@@ -2,7 +2,7 @@ const BASE = "https://api.jikan.moe/v4";
 
 // Revalidate times adjusted for final MVP performance
 const CACHE_6_HOURS = 21600;
-const CACHE_12_HOURS = 43200;
+const CACHE_1_HOUR = 3600;
 
 export async function getAnimeInfo() {
     // Official One Piece anime entry is 21
@@ -14,14 +14,14 @@ export async function getAnimeInfo() {
 
 export async function getCharacters() {
     // Fetch characters, caching for 12 hours to avoid heavy payloads
-    const res = await fetch(`${BASE}/anime/21/characters`, { next: { revalidate: CACHE_12_HOURS } });
+    const res = await fetch(`${BASE}/anime/21/characters`, { next: { revalidate: CACHE_1_HOUR } });
     if (!res.ok) return [];
     const json = await res.json();
     return json.data || [];
 }
 
 export async function getCharacterFull(id: string) {
-    const res = await fetch(`${BASE}/characters/${id}/full`, { next: { revalidate: CACHE_12_HOURS } });
+    const res = await fetch(`${BASE}/characters/${id}/full`, { next: { revalidate: CACHE_1_HOUR } });
     if (!res.ok) return null;
     const json = await res.json();
     return json.data;
@@ -36,7 +36,7 @@ export async function getEpisodes() {
 }
 
 export async function getEpisodeById(id: string) {
-    const res = await fetch(`${BASE}/anime/21/episodes/${id}`, { next: { revalidate: CACHE_12_HOURS } });
+    const res = await fetch(`${BASE}/anime/21/episodes/${id}`, { next: { revalidate: CACHE_1_HOUR } });
     if (!res.ok) return null;
     const json = await res.json();
     return json.data;
@@ -56,7 +56,7 @@ export async function getAllEpisodes() {
     while (hasNextPage) {
         console.log(`Fetching Episodes Page ${page}...`);
         try {
-            const res = await fetch(`${BASE}/anime/21/episodes?page=${page}`, { next: { revalidate: CACHE_12_HOURS } });
+            const res = await fetch(`${BASE}/anime/21/episodes?page=${page}`, { next: { revalidate: CACHE_1_HOUR } });
 
             if (res.status === 429) {
                 console.warn("Jikan Rate Limit Hit! Slowing down considerably to recover...");
