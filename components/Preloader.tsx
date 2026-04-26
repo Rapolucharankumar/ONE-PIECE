@@ -26,6 +26,7 @@ export default function Preloader() {
 
         const endTimer = setTimeout(() => {
             setIsVisible(false);
+            document.body.style.overflow = "auto";
         }, 3500);
 
         document.body.style.overflow = "hidden";
