@@ -32,7 +32,7 @@ export default async function Home() {
       </div>
 
       <div className="relative z-20 text-center max-w-5xl mx-auto px-4 mt-32 w-full">
-        <StaggerContainer className="flex flex-col items-center w-full">
+        <StaggerContainer className="flex flex-col items-center w-full" delay={3.2}>
             <StaggerItem>
                 <h1 className="text-7xl md:text-8xl lg:text-9xl font-bold font-serif mb-6 tracking-tight drop-shadow-[0_0_30px_rgba(255,215,0,0.3)] text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 select-none">
                 ONE PIECE<br />
@@ -79,7 +79,7 @@ export default async function Home() {
             </StaggerItem>
         </StaggerContainer>
 
-        <FadeIn y={50} delay={0.6} className="mt-20 flex flex-col items-center gap-6 relative z-30">
+        <FadeIn y={50} delay={3.6} className="mt-20 flex flex-col items-center gap-6 relative z-30">
           <div className="glass border border-white/10 p-8 rounded-3xl shadow-2xl backdrop-blur-xl bg-gradient-to-b from-white/5 to-transparent">
             <h2 className="text-xl font-serif text-[#FFD700] tracking-widest uppercase mb-4 drop-shadow-md text-center">
                 {liveStats.nextEpisodeTime 
@@ -91,7 +91,7 @@ export default async function Home() {
           </div>
         </FadeIn>
 
-        <FadeIn delay={0.8} y={30} className="mt-16 flex gap-8 justify-center pb-20">
+        <FadeIn delay={3.8} y={30} className="mt-16 flex gap-8 justify-center pb-20">
           <Link href="/characters">
             <MagneticButton className="px-10 py-5 bg-gradient-to-r from-[#FFD700] to-[#FDB931] text-[#0f0f1a] rounded-full font-bold text-lg shadow-[0_0_30px_rgba(255,215,0,0.4)] hover:shadow-[0_0_60px_rgba(255,215,0,0.6)]">
                 Explore Characters

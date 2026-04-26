@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Cinzel } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import AnimatedParticles from "@/components/AnimatedParticles";
+import Preloader from "@/components/Preloader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} ${cinzel.variable} antialiased bg-[#0f0f1a] text-white min-h-screen flex flex-col relative overflow-x-hidden`}>
+        <Preloader />
         <AnimatedParticles />
         <Navbar />
         <main className="max-w-[1800px] w-full mx-auto px-4 sm:px-8 xl:px-20 flex-grow relative z-10 pt-28 pb-10">
